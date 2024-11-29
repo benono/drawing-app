@@ -3,6 +3,7 @@
 }
 
 canvas {
+  touch-action: none;
   width: 100%;
   aspect-ratio: 1/1;
   border: 1px solid black;
