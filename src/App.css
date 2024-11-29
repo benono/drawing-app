@@ -1,0 +1,10 @@
+.app {
+  width: 800px;
+}
+
+canvas {
+  width: 100%;
+  aspect-ratio: 1/1;
+  border: 1px solid black;
+  background-color: white;
+}
