@@ -34,6 +34,28 @@ function App() {
     if (context) context.strokeStyle = color;
   };
 
+  const handleTouch = (
+    e: React.TouchEvent<HTMLCanvasElement>,
+    type: "start" | "move"
+  ) => {
+    const touch = e.touches[0];
+    const canvas = canvasRef.current as unknown as HTMLCanvasElement;
+    if (!canvas) return;
+
+    const rect = canvas.getBoundingClientRect();
+    const offsetX = touch.clientX - rect.left;
+    const offsetY = touch.clientY - rect.top;
+
+    if (type === "start") {
+      contextRef.current?.beginPath();
+      contextRef.current?.moveTo(offsetX, offsetY);
+      setIsPressed(true);
+    } else if (type === "move" && isPressed) {
+      contextRef.current?.lineTo(offsetX, offsetY);
+      contextRef.current?.stroke();
+    }
+  };
+
   useEffect(() => {
     const canvas = canvasRef.current as unknown as HTMLCanvasElement;
     canvas.width = 800;
@@ -55,28 +77,8 @@ function App() {
           onMouseDown={beginDraw}
           onMouseMove={updateDraw}
           onMouseUp={endDraw}
-          onTouchStart={(e) => {
-            e.preventDefault();
-            const touch = e.touches[0];
-            const mouseEvent = new MouseEvent("mousedown", {
-              clientX: touch.clientX,
-              clientY: touch.clientY,
-            });
-            beginDraw(
-              mouseEvent as unknown as React.MouseEvent<HTMLCanvasElement>
-            );
-          }}
-          onTouchMove={(e) => {
-            e.preventDefault();
-            const touch = e.touches[0];
-            const mouseEvent = new MouseEvent("mousemove", {
-              clientX: touch.clientX,
-              clientY: touch.clientY,
-            });
-            updateDraw(
-              mouseEvent as unknown as React.MouseEvent<HTMLCanvasElement>
-            );
-          }}
+          onTouchStart={(e) => handleTouch(e, "start")}
+          onTouchMove={(e) => handleTouch(e, "move")}
           onTouchEnd={endDraw}
         ></canvas>
         <div className="tools">
